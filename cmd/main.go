@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/WhiteMaks/poly_day_bus_schema/schema"
+	"github.com/WhiteMaks/poly_day_bus_schema/wbus"
 	"log"
 	"os"
-	"poly_day_bus_schema/schema"
-	"poly_day_bus_schema/wbus"
 )
 
 var (
