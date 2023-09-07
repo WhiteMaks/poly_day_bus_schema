@@ -1,4 +1,4 @@
-module poly_day_bus_schema
+module github.com/WhiteMaks/poly_day_bus_schema
 
 go 1.21.0
 
