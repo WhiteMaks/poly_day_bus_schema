@@ -137,3 +137,96 @@ func TestRabbit_SendMessageInQueue_AndReadMessage(t *testing.T) {
 	actualMessage := <-messagesChan
 	assert.Equal(t, expectedMessage, actualMessage, "Messages must be equals")
 }
+
+func TestRabbit_SendMessageInExchange(t *testing.T) {
+	queueName := "test-queue-for-exchange-send-message"
+	exchangeName := "test-exchange-for-queue-send-message"
+
+	err := rabbit.CreateQueue(queueName)
+	assert.NoError(t, err, "No error must be")
+
+	err = rabbit.CreateExchange(exchangeName)
+	assert.NoError(t, err, "No error must be")
+
+	err = rabbit.LinkQueueWithExchanger(queueName, exchangeName)
+	assert.NoError(t, err, "No error must be")
+
+	message := schema.Message{
+		FromMicroservice: "test-ms-1",
+		ToMicroservice:   rabbit.Name,
+		Method:           "test-method",
+		Version:          "1.0",
+		Body:             []byte("{\"test-field\":123}"),
+	}
+
+	err = rabbit.SendMessageInExchange(exchangeName, message)
+	assert.NoError(t, err, "No error must be")
+}
+
+func TestRabbit_SendMessageInExchange_ExchangeNotFound(t *testing.T) {
+	exchangeName := "test-exchange-for-queue-send-message-not-exist"
+
+	message := schema.Message{
+		FromMicroservice: "test-ms-1",
+		ToMicroservice:   rabbit.Name,
+		Method:           "test-method",
+		Version:          "1.0",
+		Body:             []byte("{\"test-field\":123}"),
+	}
+
+	err := rabbit.SendMessageInExchange(exchangeName, message)
+	assert.NoError(t, err, "Error must be")
+
+	rabbit.CreateQueue("sss")
+}
+
+func TestRabbit_SendMessageInExchange_AndReadMessage(t *testing.T) {
+	queueName1 := "test-queue-for-exchange-send-message-and-read-1"
+	queueName2 := "test-queue-for-exchange-send-message-and-read-2"
+	exchangeName := "test-exchange-for-queue-send-message-and-read"
+
+	err := rabbit.CreateQueue(queueName1)
+	assert.NoError(t, err, "No error must be")
+
+	err = rabbit.CreateQueue(queueName2)
+	assert.NoError(t, err, "No error must be")
+
+	err = rabbit.CreateExchange(exchangeName)
+	assert.NoError(t, err, "No error must be")
+
+	err = rabbit.LinkQueueWithExchanger(queueName1, exchangeName)
+	assert.NoError(t, err, "No error must be")
+
+	err = rabbit.LinkQueueWithExchanger(queueName2, exchangeName)
+	assert.NoError(t, err, "No error must be")
+
+	expectedMessage := schema.Message{
+		FromMicroservice: "test-ms-1",
+		ToMicroservice:   rabbit.Name,
+		Method:           "test-method",
+		Version:          "1.0",
+		Body:             []byte("{\"test-field\":123}"),
+	}
+
+	messagesChan1 := make(chan schema.Message)
+	messagesChan2 := make(chan schema.Message)
+
+	err = rabbit.SubscribeOnQueue(queueName1, func(message schema.Message) {
+		messagesChan1 <- message
+	})
+	assert.NoError(t, err, "No error must be")
+
+	err = rabbit.SubscribeOnQueue(queueName2, func(message schema.Message) {
+		messagesChan2 <- message
+	})
+	assert.NoError(t, err, "No error must be")
+
+	err = rabbit.SendMessageInExchange(exchangeName, expectedMessage)
+	assert.NoError(t, err, "No error must be")
+
+	actualMessage1 := <-messagesChan1
+	assert.Equal(t, expectedMessage, actualMessage1, "Messages must be equals")
+
+	actualMessage2 := <-messagesChan2
+	assert.Equal(t, expectedMessage, actualMessage2, "Messages must be equals")
+}
