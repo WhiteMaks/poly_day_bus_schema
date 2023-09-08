@@ -12,7 +12,6 @@ import (
 type Rabbit struct {
 	Name       string
 	connection *amqp.Connection
-	chanel     *amqp.Channel
 	queues     map[string]amqp.Queue
 }
 
@@ -29,19 +28,19 @@ func (rabbit *Rabbit) Start(address string) error {
 		return err
 	}
 
-	chanel, err := connection.Channel()
-	if err != nil {
-		return err
-	}
-
 	rabbit.connection = connection
-	rabbit.chanel = chanel
 
 	return nil
 }
 
 func (rabbit *Rabbit) CreateQueue(name string) error {
-	queue, err := rabbit.chanel.QueueDeclare(
+	chanel, err := rabbit.connection.Channel()
+	if err != nil {
+		return err
+	}
+	defer chanel.Close()
+
+	queue, err := chanel.QueueDeclare(
 		name,
 		false,
 		false,
@@ -50,7 +49,6 @@ func (rabbit *Rabbit) CreateQueue(name string) error {
 		nil,
 	)
 	if err != nil {
-		rabbit.updateChanel()
 		return err
 	}
 
@@ -60,7 +58,13 @@ func (rabbit *Rabbit) CreateQueue(name string) error {
 }
 
 func (rabbit *Rabbit) CreateExchange(name string) error {
-	err := rabbit.chanel.ExchangeDeclare(
+	chanel, err := rabbit.connection.Channel()
+	if err != nil {
+		return err
+	}
+	defer chanel.Close()
+
+	err = chanel.ExchangeDeclare(
 		name,
 		"fanout",
 		true,
@@ -70,7 +74,6 @@ func (rabbit *Rabbit) CreateExchange(name string) error {
 		nil,
 	)
 	if err != nil {
-		rabbit.updateChanel()
 		return err
 	}
 
@@ -78,7 +81,13 @@ func (rabbit *Rabbit) CreateExchange(name string) error {
 }
 
 func (rabbit *Rabbit) LinkQueueWithExchanger(queueName string, exchangeName string) error {
-	err := rabbit.chanel.QueueBind(
+	chanel, err := rabbit.connection.Channel()
+	if err != nil {
+		return err
+	}
+	defer chanel.Close()
+
+	err = chanel.QueueBind(
 		queueName,
 		"",
 		exchangeName,
@@ -86,7 +95,6 @@ func (rabbit *Rabbit) LinkQueueWithExchanger(queueName string, exchangeName stri
 		nil,
 	)
 	if err != nil {
-		rabbit.updateChanel()
 		return err
 	}
 
@@ -94,7 +102,12 @@ func (rabbit *Rabbit) LinkQueueWithExchanger(queueName string, exchangeName stri
 }
 
 func (rabbit *Rabbit) SubscribeOnQueue(queueName string, messageHandler schema.MessageHandler) error {
-	deliveryChan, err := rabbit.chanel.Consume(
+	chanel, err := rabbit.connection.Channel()
+	if err != nil {
+		return err
+	}
+
+	deliveryChan, err := chanel.Consume(
 		queueName,
 		"",
 		true,
@@ -104,11 +117,12 @@ func (rabbit *Rabbit) SubscribeOnQueue(queueName string, messageHandler schema.M
 		nil,
 	)
 	if err != nil {
-		rabbit.updateChanel()
 		return err
 	}
 
 	go func() {
+		defer chanel.Close()
+
 		for message := range deliveryChan {
 			log.Printf("Received a message: %v", string(message.Body))
 
@@ -129,6 +143,12 @@ func (rabbit *Rabbit) SubscribeOnQueue(queueName string, messageHandler schema.M
 }
 
 func (rabbit *Rabbit) SendMessageInQueue(queueName string, message schema.Message) error {
+	chanel, err := rabbit.connection.Channel()
+	if err != nil {
+		return err
+	}
+	defer chanel.Close()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -137,7 +157,7 @@ func (rabbit *Rabbit) SendMessageInQueue(queueName string, message schema.Messag
 		return err
 	}
 
-	err = rabbit.chanel.PublishWithContext(
+	err = chanel.PublishWithContext(
 		ctx,
 		"",
 		queueName,
@@ -149,7 +169,6 @@ func (rabbit *Rabbit) SendMessageInQueue(queueName string, message schema.Messag
 		},
 	)
 	if err != nil {
-		rabbit.updateChanel()
 		return err
 	}
 
@@ -157,6 +176,12 @@ func (rabbit *Rabbit) SendMessageInQueue(queueName string, message schema.Messag
 }
 
 func (rabbit *Rabbit) SendMessageInExchange(exchangeName string, message schema.Message) error {
+	chanel, err := rabbit.connection.Channel()
+	if err != nil {
+		return err
+	}
+	defer chanel.Close()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -165,7 +190,7 @@ func (rabbit *Rabbit) SendMessageInExchange(exchangeName string, message schema.
 		return err
 	}
 
-	err = rabbit.chanel.PublishWithContext(
+	err = chanel.PublishWithContext(
 		ctx,
 		exchangeName,
 		"",
@@ -177,14 +202,8 @@ func (rabbit *Rabbit) SendMessageInExchange(exchangeName string, message schema.
 		},
 	)
 	if err != nil {
-		rabbit.updateChanel()
 		return err
 	}
 
 	return nil
-}
-
-func (rabbit *Rabbit) updateChanel() {
-	chanel, _ := rabbit.connection.Channel()
-	rabbit.chanel = chanel
 }

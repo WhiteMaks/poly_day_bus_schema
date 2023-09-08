@@ -176,9 +176,6 @@ func TestRabbit_SendMessageInExchange_ExchangeNotFound(t *testing.T) {
 
 	err := rabbit.SendMessageInExchange(exchangeName, message)
 	assert.NoError(t, err, "No error must be")
-
-	err = rabbit.CreateQueue("sss")
-	assert.Error(t, err, "Error must be")
 }
 
 func TestRabbit_SendMessageInExchange_AndReadMessage(t *testing.T) {
