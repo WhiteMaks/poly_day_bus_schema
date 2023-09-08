@@ -16,7 +16,7 @@ func TestMain(m *testing.M) {
 	rabbit = NewRabbit("test-bus-schema")
 	err := rabbit.Start(rabbitConStr)
 	if err != nil {
-		log.Fatalf("error start [ %v ]: %v", rabbit.Name, err)
+		log.Fatalf("error start bus [ %v ]: %v", rabbit.Name, err)
 	}
 
 	os.Exit(m.Run())
