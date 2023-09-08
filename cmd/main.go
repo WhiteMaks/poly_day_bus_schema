@@ -37,6 +37,11 @@ func main() {
 	//create queues for subscribers. One subscribe one event
 	for exchange, queues := range schema.Subscribers {
 		for _, queue := range queues {
+			err = rabbit.CreateQueue(queue)
+			if err != nil {
+				log.Fatalf("error create queue [ %v ] for for exchange [ %v ]: %v", queue, exchange, err)
+			}
+
 			err = rabbit.LinkQueueWithExchanger(queue, exchange)
 			if err != nil {
 				log.Fatalf("error link queue [ %v ] with exchange [ %v ]: %v", queue, exchange, err)
