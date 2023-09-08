@@ -12,8 +12,7 @@ import (
 type Rabbit struct {
 	Name       string
 	connection *amqp.Connection
-	//chanel     *amqp.Channel
-	queues map[string]amqp.Queue
+	queues     map[string]amqp.Queue
 }
 
 func NewRabbit(name string) *Rabbit {
@@ -30,7 +29,6 @@ func (rabbit *Rabbit) Start(address string) error {
 	}
 
 	rabbit.connection = connection
-	//rabbit.chanel = chanel
 
 	return nil
 }
