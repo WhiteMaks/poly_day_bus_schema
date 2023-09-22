@@ -28,7 +28,7 @@ func TestGetIdentifyUser10RequestFromMessage(t *testing.T) {
 	expectedIdentifyUser10Request := IdentifyUser10Request{
 		Token: "1234token1234",
 	}
-
+	
 	actualIdentifyUser10Request, err := GetIdentifyUser10RequestFromMessage(message)
 	assert.NoError(t, err, "No error must be")
 
