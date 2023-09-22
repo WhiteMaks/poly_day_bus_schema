@@ -5,6 +5,36 @@ import (
 	"testing"
 )
 
+func TestGenerateMessageForIdentifyUser10Response(t *testing.T) {
+	expectedMessage := Message{
+		Method:  CommandIdentifyUser,
+		Version: Version10,
+		Body:    []byte("{\"id\":987}"),
+	}
+
+	actualMessage, err := GenerateMessageForIdentifyUser10Response(987)
+	assert.NoError(t, err, "No error must be")
+
+	assert.Equal(t, expectedMessage, actualMessage, "Messages must be equals")
+}
+
+func TestGetIdentifyUser10RequestFromMessage(t *testing.T) {
+	message := Message{
+		Method:  CommandIdentifyUser,
+		Version: Version10,
+		Body:    []byte("{\"token\":\"1234token1234\"}"),
+	}
+
+	expectedIdentifyUser10Request := IdentifyUser10Request{
+		Token: "1234token1234",
+	}
+
+	actualIdentifyUser10Request, err := GetIdentifyUser10RequestFromMessage(message)
+	assert.NoError(t, err, "No error must be")
+
+	assert.Equal(t, expectedIdentifyUser10Request, actualIdentifyUser10Request, "Identify user requests must be equals")
+}
+
 func TestGenerateMessageForUserCreated10(t *testing.T) {
 	expectedMessage := Message{
 		Method:  EventNameUserCreated,
