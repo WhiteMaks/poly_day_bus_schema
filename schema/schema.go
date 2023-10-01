@@ -32,11 +32,19 @@ var Subscribers = map[string][]string{
 	},
 }
 
+type Meta struct {
+	WsId   string `json:"ws_id"`
+	UserId int64  `json:"user_id"`
+}
+
 type Message struct {
 	FromMicroservice string          `json:"from_microservice"`
 	ToMicroservice   string          `json:"to_microservice"`
+	RequestId        string          `json:"request_id"`
+	ResponseId       string          `json:"response_id"`
 	Method           string          `json:"method"`
 	Version          string          `json:"version"`
+	Meta             Meta            `json:"meta"`
 	Body             json.RawMessage `json:"body"`
 }
 
