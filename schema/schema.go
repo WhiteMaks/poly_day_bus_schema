@@ -12,6 +12,15 @@ const (
 	Version10 = "1.0"
 )
 
+type Status int64
+
+const (
+	BAD_REQUEST    Status = 4000
+	AUTHORIZED     Status = 4010
+	NOT_FOUND      Status = 4040
+	INTERNAL_ERROR Status = 5000
+)
+
 const (
 	PathSubscriptionDeveloperServiceAuthenticateUserCreated10 = PathMsDeveloperService + "." + PathEventAuthenticateUserCreated10
 )
@@ -44,6 +53,7 @@ type Message struct {
 	ResponseId       string          `json:"response_id"`
 	Method           string          `json:"method"`
 	Version          string          `json:"version"`
+	Status           Status          `json:"status"`
 	Meta             Meta            `json:"meta"`
 	Body             json.RawMessage `json:"body"`
 }
