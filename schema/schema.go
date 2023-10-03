@@ -1,6 +1,10 @@
 package schema
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"github.com/WhiteMaks/poly_day_bus_schema/wbus"
+	"log"
+)
 
 const (
 	PathMsGateway          = "gateway"
@@ -59,3 +63,21 @@ type Message struct {
 }
 
 type MessageHandler func(message Message)
+
+func GenerateFullMethodNameFromMessage(message Message) string {
+	return message.Method + "-" + message.Version
+}
+
+func FillMessageForSend(requestId string, fromMs string, toMs string, status Status, message *Message) {
+	message.FromMicroservice = fromMs
+	message.ToMicroservice = toMs
+	message.ResponseId = requestId
+	message.Status = status
+}
+
+func SendMessage(message Message, bus *wbus.Rabbit) {
+	err := bus.SendMessageInQueue(message.ToMicroservice, message)
+	if err != nil {
+		log.Printf("send message error: %v", err)
+	}
+}
