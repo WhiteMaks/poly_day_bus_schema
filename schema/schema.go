@@ -2,8 +2,6 @@ package schema
 
 import (
 	"encoding/json"
-	"github.com/WhiteMaks/poly_day_bus_schema/wbus"
-	"log"
 )
 
 const (
@@ -73,11 +71,4 @@ func FillMessageForSend(requestId string, fromMs string, toMs string, status Sta
 	message.ToMicroservice = toMs
 	message.ResponseId = requestId
 	message.Status = status
-}
-
-func SendMessage(message Message, bus *wbus.Rabbit) {
-	err := bus.SendMessageInQueue(message.ToMicroservice, message)
-	if err != nil {
-		log.Printf("send message error: %v", err)
-	}
 }
