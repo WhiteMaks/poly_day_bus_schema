@@ -175,6 +175,13 @@ func (rabbit *Rabbit) SendMessageInQueue(queueName string, message schema.Messag
 	return nil
 }
 
+func (rabbit *Rabbit) SendMessage(message schema.Message) {
+	err := rabbit.SendMessageInQueue(message.ToMicroservice, message)
+	if err != nil {
+		log.Printf("send message error: %v", err)
+	}
+}
+
 func (rabbit *Rabbit) SendMessageInExchange(exchangeName string, message schema.Message) error {
 	chanel, err := rabbit.connection.Channel()
 	if err != nil {

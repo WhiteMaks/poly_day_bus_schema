@@ -1,6 +1,8 @@
 package schema
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 const (
 	PathMsGateway          = "gateway"
@@ -10,6 +12,15 @@ const (
 
 const (
 	Version10 = "1.0"
+)
+
+type Status int64
+
+const (
+	BAD_REQUEST    Status = 4000
+	AUTHORIZED     Status = 4010
+	NOT_FOUND      Status = 4040
+	INTERNAL_ERROR Status = 5000
 )
 
 const (
@@ -44,8 +55,20 @@ type Message struct {
 	ResponseId       string          `json:"response_id"`
 	Method           string          `json:"method"`
 	Version          string          `json:"version"`
+	Status           Status          `json:"status"`
 	Meta             Meta            `json:"meta"`
 	Body             json.RawMessage `json:"body"`
 }
 
 type MessageHandler func(message Message)
+
+func GenerateFullMethodNameFromMessage(message Message) string {
+	return message.Method + "-" + message.Version
+}
+
+func FillMessageForSend(requestId string, fromMs string, toMs string, status Status, message *Message) {
+	message.FromMicroservice = fromMs
+	message.ToMicroservice = toMs
+	message.ResponseId = requestId
+	message.Status = status
+}
