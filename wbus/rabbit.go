@@ -176,6 +176,17 @@ func (rabbit *Rabbit) SendMessageInQueue(queueName string, message schema.Messag
 }
 
 func (rabbit *Rabbit) SendMessage(message schema.Message) {
+	permissions, found := schema.Permissions[message.FromMicroservice]
+	if !found {
+		log.Printf("permissions for [ %v ] not found", message.FromMicroservice)
+		return
+	}
+
+	if !contains(permissions, message.Method) {
+		log.Printf("[ %v ] don't have permission for [ %v ]", message.FromMicroservice, message.Method)
+		return
+	}
+
 	err := rabbit.SendMessageInQueue(message.ToMicroservice, message)
 	if err != nil {
 		log.Printf("send message error: %v", err)
@@ -213,4 +224,13 @@ func (rabbit *Rabbit) SendMessageInExchange(exchangeName string, message schema.
 	}
 
 	return nil
+}
+
+func contains[T comparable](s []T, e T) bool {
+	for _, v := range s {
+		if v == e {
+			return true
+		}
+	}
+	return false
 }
