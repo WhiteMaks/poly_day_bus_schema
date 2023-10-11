@@ -3,11 +3,17 @@ package schema
 import "encoding/json"
 
 const (
-	CommandIdentifyUser = "identify-user"
+	PathMsAuthenticate = "authenticate"
 )
 
 const (
-	CommandIdentifyUser10 = CommandIdentifyUser + "-" + Version10
+	CommandIdentifyUser  = "identify-user"
+	CommandGetDevelopers = "get-developers"
+)
+
+const (
+	CommandIdentifyUser10  = CommandIdentifyUser + "-" + Version10
+	CommandGetDevelopers10 = CommandGetDevelopers + "-" + Version10
 )
 
 const (
@@ -26,28 +32,57 @@ type IdentifyUser10Response struct {
 	ID int64 `json:"id"`
 }
 
+type GetDevelopers10Request struct {
+	FromUserId int64 `json:"from_user_id"`
+}
+
+type GetDevelopers10Response struct {
+	Developers []Developer `json:"developers"`
+}
+
+type Developer struct {
+	UserId int64 `json:"user_id"`
+}
+
 type UserCrated10 struct {
 	ID   int64  `json:"id"`
 	Role string `json:"role"`
 }
 
-func GenerateMessageForIdentifyUser10Response(id int64) (Message, error) {
-	body := IdentifyUser10Response{
-		ID: id,
+func GenerateDeveloperStruct(userId int64) Developer {
+	return Developer{
+		UserId: userId,
+	}
+}
+
+func FillBodyGetDevelopers10ResponseForMessage(developers []Developer, message *Message) error {
+	body := GetDevelopers10Response{
+		Developers: developers,
 	}
 
 	bodyBytes, err := json.Marshal(body)
 	if err != nil {
-		return Message{}, err
+		return err
 	}
 
-	message := Message{
-		Method:  CommandIdentifyUser,
-		Version: Version10,
-		Body:    bodyBytes,
+	message.Body = bodyBytes
+
+	return nil
+}
+
+func FillBodyIdentifyUser10ResponseForMessage(userId int64, message *Message) error {
+	body := IdentifyUser10Response{
+		ID: userId,
 	}
 
-	return message, nil
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
 }
 
 func GetIdentifyUser10RequestFromMessage(message Message) (IdentifyUser10Request, error) {
@@ -59,6 +94,17 @@ func GetIdentifyUser10RequestFromMessage(message Message) (IdentifyUser10Request
 	}
 
 	return identifyUser10Request, nil
+}
+
+func GetGetDevelopers10RequestFromMessage(message Message) (GetDevelopers10Request, error) {
+	var getDevelopers10Request GetDevelopers10Request
+
+	err := json.Unmarshal(message.Body, &getDevelopers10Request)
+	if err != nil {
+		return getDevelopers10Request, err
+	}
+
+	return getDevelopers10Request, nil
 }
 
 func GenerateMessageForUserCreated10(id int64, role string) (Message, error) {
