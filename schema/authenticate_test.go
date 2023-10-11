@@ -5,19 +5,6 @@ import (
 	"testing"
 )
 
-func TestGenerateMessageForIdentifyUser10Response(t *testing.T) {
-	expectedMessage := Message{
-		Method:  CommandIdentifyUser,
-		Version: Version10,
-		Body:    []byte("{\"id\":987}"),
-	}
-
-	actualMessage, err := GenerateMessageForIdentifyUser10Response(987)
-	assert.NoError(t, err, "No error must be")
-
-	assert.Equal(t, expectedMessage, actualMessage, "Messages must be equals")
-}
-
 func TestGetIdentifyUser10RequestFromMessage(t *testing.T) {
 	message := Message{
 		Method:  CommandIdentifyUser,

@@ -4,46 +4,6 @@ import (
 	"encoding/json"
 )
 
-const (
-	PathMsGateway          = "gateway"
-	PathMsAuthenticate     = "authenticate"
-	PathMsDeveloperService = "developer-service"
-)
-
-const (
-	Version10 = "1.0"
-)
-
-type Status int64
-
-const (
-	OK             Status = 2000
-	BAD_REQUEST    Status = 4000
-	AUTHORIZED     Status = 4010
-	NOT_FOUND      Status = 4040
-	INTERNAL_ERROR Status = 5000
-)
-
-const (
-	PathSubscriptionDeveloperServiceAuthenticateUserCreated10 = PathMsDeveloperService + "." + PathEventAuthenticateUserCreated10
-)
-
-var Microservices = []string{
-	PathMsGateway,
-	PathMsAuthenticate,
-	PathMsDeveloperService,
-}
-
-var Events = []string{
-	PathEventAuthenticateUserCreated10,
-}
-
-var Subscribers = map[string][]string{
-	PathEventAuthenticateUserCreated10: {
-		PathSubscriptionDeveloperServiceAuthenticateUserCreated10,
-	},
-}
-
 type Meta struct {
 	WsId   string `json:"ws_id"`
 	UserId int64  `json:"user_id"`
@@ -71,5 +31,24 @@ func FillMessageForSend(requestId string, fromMs string, toMs string, status Sta
 	message.FromMicroservice = fromMs
 	message.ToMicroservice = toMs
 	message.ResponseId = requestId
+	message.Status = status
+}
+
+func GenerateResponseMessage(requestMessage Message) Message {
+	return Message{
+		FromMicroservice: requestMessage.ToMicroservice,
+		ToMicroservice:   requestMessage.FromMicroservice,
+		ResponseId:       requestMessage.RequestId,
+		Method:           requestMessage.Method,
+		Version:          requestMessage.Version,
+		Meta:             requestMessage.Meta,
+	}
+}
+
+func FillMetaForMessage(message *Message, meta Meta) {
+	message.Meta = meta
+}
+
+func FillStatusForMessage(message *Message, status Status) {
 	message.Status = status
 }
