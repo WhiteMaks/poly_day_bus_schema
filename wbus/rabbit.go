@@ -133,9 +133,7 @@ func (rabbit *Rabbit) SubscribeOnQueue(queueName string, messageHandler schema.M
 				continue
 			}
 
-			if messageStruct.ToMicroservice == rabbit.Name {
-				messageHandler(messageStruct)
-			}
+			messageHandler(messageStruct)
 		}
 	}()
 
