@@ -11,6 +11,11 @@ const (
 	CommandDeleteRelease = "delete-release"
 	CommandUpdateRelease = "update-release"
 	CommandGetReleases   = "get-releases"
+
+	CommandCreateEntity = "create-entity"
+	CommandDeleteEntity = "delete-entity"
+	CommandUpdateEntity = "update-entity"
+	CommandGetEntities  = "get-entities"
 )
 
 const (
@@ -18,6 +23,11 @@ const (
 	CommandDeleteRelease10 = CommandDeleteRelease + "-" + Version10
 	CommandUpdateRelease10 = CommandUpdateRelease + "-" + Version10
 	CommandGetReleases10   = CommandGetReleases + "-" + Version10
+
+	CommandCreateEntity10 = CommandCreateEntity + "-" + Version10
+	CommandDeleteEntity10 = CommandDeleteEntity + "-" + Version10
+	CommandUpdateEntity10 = CommandUpdateEntity + "-" + Version10
+	CommandGetEntities10  = CommandGetEntities + "-" + Version10
 )
 
 const (
@@ -57,6 +67,57 @@ type DeleteRelease10Request struct {
 }
 
 type DeleteRelease10Response struct {
+}
+
+type EntityType string
+
+const (
+	FOLDER EntityType = "FOLDER"
+	MODEL  EntityType = "MODEL"
+	SHADER EntityType = "SHADER"
+	SCRIPT EntityType = "SCRIPT"
+	MUSIC  EntityType = "MUSIC"
+	SOUND  EntityType = "SOUND"
+)
+
+type ShaderSource struct {
+	Vertex   string `json:"vertex"`
+	Fragment string `json:"fragment"`
+}
+
+type ModelSource struct {
+	FileBase64 string `json:"file_base_64"`
+}
+
+type Entity[SOURCE any] struct {
+	ID     int64      `json:"ID"`
+	Name   string     `json:"name"`
+	Type   EntityType `json:"type"`
+	Source SOURCE     `json:"source"`
+}
+
+type GetEntities10Request struct {
+}
+
+type GetEntities10Response struct {
+	Entities []Entity[any]         `json:"entities"`
+	Icons    map[EntityType]string `json:"icons"`
+}
+
+type CreateEntity10Request struct {
+	Name string     `json:"name"`
+	Type EntityType `json:"type"`
+}
+
+type CreateEntity10Response struct {
+	ID int64 `json:"id"`
+}
+
+type DeleteEntity10Request struct {
+	ID int64 `json:"id"`
+}
+
+type DeleteEntity10Response struct {
 }
 
 func GetUpdateRelease10RequestFromMessage(message Message) (UpdateRelease10Request, error) {
@@ -117,6 +178,68 @@ func GenerateReleaseStruct(id int64, name string) Release {
 func FillBodyGetReleases10ResponseForMessage(releases []Release, message *Message) error {
 	body := GetReleases10Response{
 		Releases: releases,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
+}
+
+func GetDeleteEntity10RequestFromMessage(message Message) (DeleteEntity10Request, error) {
+	var deleteEntity10Request DeleteEntity10Request
+
+	err := json.Unmarshal(message.Body, &deleteEntity10Request)
+	if err != nil {
+		return deleteEntity10Request, err
+	}
+
+	return deleteEntity10Request, nil
+}
+
+func GetCreateEntity10RequestFromMessage(message Message) (CreateEntity10Request, error) {
+	var createEntity10Request CreateEntity10Request
+
+	err := json.Unmarshal(message.Body, &createEntity10Request)
+	if err != nil {
+		return createEntity10Request, err
+	}
+
+	return createEntity10Request, nil
+}
+
+func FillBodyCreateEntity10ResponseForMessage(entityId int64, message *Message) error {
+	body := CreateEntity10Response{
+		ID: entityId,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
+}
+
+func GenerateEntityStruct[SOURCE any](id int64, name string, entityType EntityType, source SOURCE) Entity[SOURCE] {
+	return Entity[SOURCE]{
+		ID:     id,
+		Name:   name,
+		Type:   entityType,
+		Source: source,
+	}
+}
+
+func FillBodyGetEntities10ResponseForMessage(entities []Entity[any], icons map[EntityType]string, message *Message) error {
+	body := GetEntities10Response{
+		Entities: entities,
+		Icons:    icons,
 	}
 
 	bodyBytes, err := json.Marshal(body)

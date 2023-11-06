@@ -14,12 +14,20 @@ var Permissions = map[string][]string{
 		CommandDeleteRelease,
 		CommandUpdateRelease,
 		CommandGetReleases,
+		CommandCreateEntity,
+		CommandDeleteEntity,
+		CommandUpdateEntity,
+		CommandGetEntities,
 	},
 	PathMsDeveloperService: {
 		CommandCreateRelease,
 		CommandDeleteRelease,
 		CommandUpdateRelease,
 		CommandGetReleases,
+		CommandCreateEntity,
+		CommandDeleteEntity,
+		CommandUpdateEntity,
+		CommandGetEntities,
 
 		//authenticate
 		CommandGetDevelopers,
