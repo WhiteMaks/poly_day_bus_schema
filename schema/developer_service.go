@@ -114,6 +114,8 @@ func (et EntityType) String() *string {
 			result = "SOUND"
 			break
 		}
+	default:
+		return nil
 	}
 
 	return &result
