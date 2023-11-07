@@ -80,6 +80,45 @@ const (
 	SOUND  EntityType = "SOUND"
 )
 
+func (et EntityType) String() *string {
+	var result string
+
+	switch et {
+	case FOLDER:
+		{
+			result = "FOLDER"
+			break
+		}
+	case MODEL:
+		{
+			result = "MODEL"
+			break
+		}
+	case SHADER:
+		{
+			result = "SHADER"
+			break
+		}
+	case SCRIPT:
+		{
+			result = "SCRIPT"
+			break
+		}
+	case MUSIC:
+		{
+			result = "MUSIC"
+			break
+		}
+	case SOUND:
+		{
+			result = "SOUND"
+			break
+		}
+	}
+
+	return &result
+}
+
 type ShaderSource struct {
 	Vertex   string `json:"vertex"`
 	Fragment string `json:"fragment"`
