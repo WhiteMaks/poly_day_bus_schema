@@ -90,10 +90,11 @@ type ModelSource struct {
 }
 
 type Entity[SOURCE any] struct {
-	ID     int64      `json:"ID"`
-	Name   string     `json:"name"`
-	Type   EntityType `json:"type"`
-	Source SOURCE     `json:"source"`
+	ID       int64            `json:"ID"`
+	Name     string           `json:"name"`
+	Type     EntityType       `json:"type"`
+	Source   SOURCE           `json:"source"`
+	Entities []Entity[SOURCE] `json:"entities"`
 }
 
 type GetEntities10Request struct {
@@ -105,8 +106,9 @@ type GetEntities10Response struct {
 }
 
 type CreateEntity10Request struct {
-	Name string     `json:"name"`
-	Type EntityType `json:"type"`
+	Name           string     `json:"name"`
+	Type           EntityType `json:"type"`
+	ParentEntityId int64      `json:"parent_entity_id"`
 }
 
 type CreateEntity10Response struct {
