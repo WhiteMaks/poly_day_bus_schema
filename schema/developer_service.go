@@ -142,8 +142,7 @@ type GetEntities10Request struct {
 }
 
 type GetEntities10Response struct {
-	Entities []Entity[any]         `json:"entities"`
-	Icons    map[EntityType]string `json:"icons"`
+	Entities []Entity[any] `json:"entities"`
 }
 
 type CreateEntity10Request struct {
@@ -279,10 +278,9 @@ func GenerateEntityStruct[SOURCE any](id int64, name string, entityType EntityTy
 	}
 }
 
-func FillBodyGetEntities10ResponseForMessage(entities []Entity[any], icons map[EntityType]string, message *Message) error {
+func FillBodyGetEntities10ResponseForMessage(entities []Entity[any], message *Message) error {
 	body := GetEntities10Response{
 		Entities: entities,
-		Icons:    icons,
 	}
 
 	bodyBytes, err := json.Marshal(body)
