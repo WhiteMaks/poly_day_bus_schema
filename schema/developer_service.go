@@ -131,7 +131,7 @@ type ModelSource struct {
 }
 
 type Entity[SOURCE any] struct {
-	ID       int64            `json:"ID"`
+	ID       int64            `json:"id"`
 	Name     string           `json:"name"`
 	Type     EntityType       `json:"type"`
 	Source   SOURCE           `json:"source"`
