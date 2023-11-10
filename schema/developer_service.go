@@ -14,6 +14,7 @@ const (
 
 	CommandCreateEntity = "create-entity"
 	CommandDeleteEntity = "delete-entity"
+	
 	CommandUpdateEntity = "update-entity"
 	CommandGetEntities  = "get-entities"
 )
