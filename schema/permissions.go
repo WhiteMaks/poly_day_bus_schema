@@ -18,6 +18,10 @@ var Permissions = map[string][]string{
 		CommandDeleteEntity,
 		CommandUpdateEntity,
 		CommandGetEntities,
+		CommandGetModelSource,
+		CommandSaveModelSource,
+		CommandGetShaderSource,
+		CommandSaveShaderSource,
 	},
 	PathMsDeveloperService: {
 		CommandCreateRelease,
@@ -28,6 +32,10 @@ var Permissions = map[string][]string{
 		CommandDeleteEntity,
 		CommandUpdateEntity,
 		CommandGetEntities,
+		CommandGetModelSource,
+		CommandSaveModelSource,
+		CommandGetShaderSource,
+		CommandSaveShaderSource,
 
 		//authenticate
 		CommandGetDevelopers,
