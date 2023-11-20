@@ -19,6 +19,9 @@ const (
 
 	CommandGetModelSource  = "get-model-source"
 	CommandSaveModelSource = "save-model-source"
+
+	CommandGetShaderSource  = "get-shader-source"
+	CommandSaveShaderSource = "save-shader-source"
 )
 
 const (
@@ -34,11 +37,34 @@ const (
 
 	CommandGetModelSource10  = CommandGetModelSource + "-" + Version10
 	CommandSaveModelSource10 = CommandSaveModelSource + "-" + Version10
+
+	CommandGetShaderSource10  = CommandGetShaderSource + "-" + Version10
+	CommandSaveShaderSource10 = CommandSaveShaderSource + "-" + Version10
 )
 
 const (
 	PathSubscriptionDeveloperServiceAuthenticateUserCreated10 = PathMsDeveloperService + "." + PathEventAuthenticateUserCreated10
 )
+
+type SaveShaderSource10Request struct {
+	VertexShader   string `json:"vertex_shader"`
+	FragmentShader string `json:"fragment_shader"`
+	EntityId       int64  `json:"entity_id"`
+}
+
+type SaveShaderSource10Response struct {
+	ID int64 `json:"id"`
+}
+
+type GetShaderSource10Request struct {
+	EntityId int64 `json:"entity_id"`
+}
+
+type GetShaderSource10Response struct {
+	VertexShader   string `json:"vertex_shader"`
+	FragmentShader string `json:"fragment_shader"`
+	ID             int64  `json:"id"`
+}
 
 type SaveModelSource10Request struct {
 	SourceBase64 string `json:"source_base_64"`
@@ -184,6 +210,60 @@ type DeleteEntity10Request struct {
 }
 
 type DeleteEntity10Response struct {
+}
+
+func GetGetShaderSource10RequestFromMessage(message Message) (GetShaderSource10Request, error) {
+	var getShaderSource10Request GetShaderSource10Request
+
+	err := json.Unmarshal(message.Body, &getShaderSource10Request)
+	if err != nil {
+		return getShaderSource10Request, err
+	}
+
+	return getShaderSource10Request, nil
+}
+
+func FillBodyGetShaderSource10ResponseForMessage(sourceId int64, vertexShader string, fragmentShader string, message *Message) error {
+	body := GetShaderSource10Response{
+		ID:             sourceId,
+		VertexShader:   vertexShader,
+		FragmentShader: fragmentShader,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
+}
+
+func GetSaveShaderSource10RequestFromMessage(message Message) (SaveShaderSource10Request, error) {
+	var saveShaderSource10Request SaveShaderSource10Request
+
+	err := json.Unmarshal(message.Body, &saveShaderSource10Request)
+	if err != nil {
+		return saveShaderSource10Request, err
+	}
+
+	return saveShaderSource10Request, nil
+}
+
+func FillBodySaveShaderSource10ResponseForMessage(sourceId int64, message *Message) error {
+	body := SaveShaderSource10Response{
+		ID: sourceId,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
 }
 
 func GetGetModelSource10RequestFromMessage(message Message) (GetModelSource10Request, error) {
