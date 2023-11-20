@@ -16,6 +16,9 @@ const (
 	CommandDeleteEntity = "delete-entity"
 	CommandUpdateEntity = "update-entity"
 	CommandGetEntities  = "get-entities"
+
+	CommandGetModelSource  = "get-model-source"
+	CommandSaveModelSource = "save-model-source"
 )
 
 const (
@@ -28,11 +31,32 @@ const (
 	CommandDeleteEntity10 = CommandDeleteEntity + "-" + Version10
 	CommandUpdateEntity10 = CommandUpdateEntity + "-" + Version10
 	CommandGetEntities10  = CommandGetEntities + "-" + Version10
+
+	CommandGetModelSource10  = CommandGetModelSource + "-" + Version10
+	CommandSaveModelSource10 = CommandSaveModelSource + "-" + Version10
 )
 
 const (
 	PathSubscriptionDeveloperServiceAuthenticateUserCreated10 = PathMsDeveloperService + "." + PathEventAuthenticateUserCreated10
 )
+
+type SaveModelSource10Request struct {
+	SourceBase64 string `json:"source_base_64"`
+	EntityId     int64  `json:"entity_id"`
+}
+
+type SaveModelSource10Response struct {
+	ID int64 `json:"id"`
+}
+
+type GetModelSource10Request struct {
+	EntityId int64 `json:"entity_id"`
+}
+
+type GetModelSource10Response struct {
+	SourceBase64 string `json:"source_base_64"`
+	ID           int64  `json:"id"`
+}
 
 type CreateRelease10Request struct {
 	Name string `json:"name"`
@@ -160,6 +184,59 @@ type DeleteEntity10Request struct {
 }
 
 type DeleteEntity10Response struct {
+}
+
+func GetGetModelSource10RequestFromMessage(message Message) (GetModelSource10Request, error) {
+	var getModelSource10Request GetModelSource10Request
+
+	err := json.Unmarshal(message.Body, &getModelSource10Request)
+	if err != nil {
+		return getModelSource10Request, err
+	}
+
+	return getModelSource10Request, nil
+}
+
+func FillBodyGetModelSource10ResponseForMessage(sourceId int64, sourceBase64 string, message *Message) error {
+	body := GetModelSource10Response{
+		ID:           sourceId,
+		SourceBase64: sourceBase64,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
+}
+
+func GetSaveModelSource10RequestFromMessage(message Message) (SaveModelSource10Request, error) {
+	var saveModelSource10Request SaveModelSource10Request
+
+	err := json.Unmarshal(message.Body, &saveModelSource10Request)
+	if err != nil {
+		return saveModelSource10Request, err
+	}
+
+	return saveModelSource10Request, nil
+}
+
+func FillBodySaveModelSource10ResponseForMessage(sourceId int64, message *Message) error {
+	body := SaveModelSource10Response{
+		ID: sourceId,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
 }
 
 func GetUpdateRelease10RequestFromMessage(message Message) (UpdateRelease10Request, error) {
