@@ -124,8 +124,6 @@ func (rabbit *Rabbit) SubscribeOnQueue(queueName string, messageHandler schema.M
 		defer chanel.Close()
 
 		for message := range deliveryChan {
-			log.Printf("Received a message: %v", string(message.Body))
-
 			var messageStruct schema.Message
 			err = json.Unmarshal(message.Body, &messageStruct)
 			if err != nil {
