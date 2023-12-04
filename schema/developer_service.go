@@ -22,6 +22,10 @@ const (
 
 	CommandGetShaderSource  = "get-shader-source"
 	CommandSaveShaderSource = "save-shader-source"
+
+	CommandGetShaderPrograms   = "get-shader-programs"
+	CommandCreateShaderProgram = "create-shader-program"
+	CommandDeleteShaderProgram = "delete-shader-program"
 )
 
 const (
@@ -40,11 +44,44 @@ const (
 
 	CommandGetShaderSource10  = CommandGetShaderSource + "-" + Version10
 	CommandSaveShaderSource10 = CommandSaveShaderSource + "-" + Version10
+
+	CommandCreateShaderProgram10 = CommandCreateShaderProgram + "-" + Version10
+	CommandDeleteShaderProgram10 = CommandDeleteShaderProgram + "-" + Version10
+	CommandGetShaderPrograms10   = CommandGetShaderPrograms + "-" + Version10
 )
 
 const (
 	PathSubscriptionDeveloperServiceAuthenticateUserCreated10 = PathMsDeveloperService + "." + PathEventAuthenticateUserCreated10
 )
+
+type GetShaderPrograms10Request struct {
+}
+
+type GetShaderPrograms10Response struct {
+	ShaderPrograms []ShaderProgram `json:"shader_programs"`
+}
+
+type ShaderProgram struct {
+	ID             int64  `json:"id"`
+	Name           string `json:"name"`
+	ShaderEntityId int64  `json:"shader_entity_id"`
+}
+
+type DeleteShaderProgram10Request struct {
+	ID int64 `json:"id"`
+}
+
+type DeleteShaderProgram10Response struct {
+}
+
+type CreateShaderProgram10Request struct {
+	Name           string `json:"name"`
+	ShaderEntityId int64  `json:"shader_entity_id"`
+}
+
+type CreateShaderProgram10Response struct {
+	ID int64 `json:"id"`
+}
 
 type SaveShaderSource10Request struct {
 	VertexShader   string `json:"vertex_shader"`
@@ -180,19 +217,18 @@ type ModelSource struct {
 	FileBase64 string `json:"file_base_64"`
 }
 
-type Entity[SOURCE any] struct {
-	ID       int64            `json:"id"`
-	Name     string           `json:"name"`
-	Type     EntityType       `json:"type"`
-	Source   SOURCE           `json:"source"`
-	Entities []Entity[SOURCE] `json:"entities"`
+type Entity struct {
+	ID       int64      `json:"id"`
+	Name     string     `json:"name"`
+	Type     EntityType `json:"type"`
+	Entities []Entity   `json:"entities"`
 }
 
 type GetEntities10Request struct {
 }
 
 type GetEntities10Response struct {
-	Entities []Entity[any] `json:"entities"`
+	Entities []Entity `json:"entities"`
 }
 
 type CreateEntity10Request struct {
@@ -210,6 +246,66 @@ type DeleteEntity10Request struct {
 }
 
 type DeleteEntity10Response struct {
+}
+
+func GenerateShaderProgramStruct(id int64, name string, shaderEntityId int64) ShaderProgram {
+	return ShaderProgram{
+		ID:             id,
+		Name:           name,
+		ShaderEntityId: shaderEntityId,
+	}
+}
+
+func FillBodyGetShaderPrograms10ResponseForMessage(shaderPrograms []ShaderProgram, message *Message) error {
+	body := GetShaderPrograms10Response{
+		ShaderPrograms: shaderPrograms,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
+}
+
+func GetDeleteShaderProgram10RequestFromMessage(message Message) (DeleteShaderProgram10Request, error) {
+	var deleteShaderProgram10Request DeleteShaderProgram10Request
+
+	err := json.Unmarshal(message.Body, &deleteShaderProgram10Request)
+	if err != nil {
+		return deleteShaderProgram10Request, err
+	}
+
+	return deleteShaderProgram10Request, nil
+}
+
+func GetCreateShaderProgram10RequestFromMessage(message Message) (CreateShaderProgram10Request, error) {
+	var createShaderProgram10Request CreateShaderProgram10Request
+
+	err := json.Unmarshal(message.Body, &createShaderProgram10Request)
+	if err != nil {
+		return createShaderProgram10Request, err
+	}
+
+	return createShaderProgram10Request, nil
+}
+
+func FillBodyCreateShaderProgram10ResponseForMessage(shaderProgramId int64, message *Message) error {
+	body := CreateShaderProgram10Response{
+		ID: shaderProgramId,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
 }
 
 func GetGetShaderSource10RequestFromMessage(message Message) (GetShaderSource10Request, error) {
@@ -426,16 +522,15 @@ func FillBodyCreateEntity10ResponseForMessage(entityId int64, message *Message) 
 	return nil
 }
 
-func GenerateEntityStruct[SOURCE any](id int64, name string, entityType EntityType, source SOURCE) Entity[SOURCE] {
-	return Entity[SOURCE]{
-		ID:     id,
-		Name:   name,
-		Type:   entityType,
-		Source: source,
+func GenerateEntityStruct(id int64, name string, entityType EntityType) Entity {
+	return Entity{
+		ID:   id,
+		Name: name,
+		Type: entityType,
 	}
 }
 
-func FillBodyGetEntities10ResponseForMessage(entities []Entity[any], message *Message) error {
+func FillBodyGetEntities10ResponseForMessage(entities []Entity, message *Message) error {
 	body := GetEntities10Response{
 		Entities: entities,
 	}
