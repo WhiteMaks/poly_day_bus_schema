@@ -22,6 +22,9 @@ var Permissions = map[string][]string{
 		CommandSaveModelSource,
 		CommandGetShaderSource,
 		CommandSaveShaderSource,
+		CommandCreateShaderProgram,
+		CommandDeleteShaderProgram,
+		CommandGetShaderPrograms,
 	},
 	PathMsDeveloperService: {
 		CommandCreateRelease,
@@ -36,6 +39,9 @@ var Permissions = map[string][]string{
 		CommandSaveModelSource,
 		CommandGetShaderSource,
 		CommandSaveShaderSource,
+		CommandCreateShaderProgram,
+		CommandDeleteShaderProgram,
+		CommandGetShaderPrograms,
 
 		//authenticate
 		CommandGetDevelopers,
