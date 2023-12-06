@@ -55,6 +55,7 @@ const (
 )
 
 type GetShaderPrograms10Request struct {
+	ReleaseId int64 `json:"release_id"`
 }
 
 type GetShaderPrograms10Response struct {
@@ -77,6 +78,7 @@ type DeleteShaderProgram10Response struct {
 type CreateShaderProgram10Request struct {
 	Name           string `json:"name"`
 	ShaderEntityId int64  `json:"shader_entity_id"`
+	ReleaseId      int64  `json:"release_id"`
 }
 
 type CreateShaderProgram10Response struct {
@@ -254,6 +256,17 @@ func GenerateShaderProgramStruct(id int64, name string, shaderEntityId int64) Sh
 		Name:           name,
 		ShaderEntityId: shaderEntityId,
 	}
+}
+
+func GetGetShaderPrograms10RequestFromMessage(message Message) (GetShaderPrograms10Request, error) {
+	var getShaderPrograms10Request GetShaderPrograms10Request
+
+	err := json.Unmarshal(message.Body, &getShaderPrograms10Request)
+	if err != nil {
+		return getShaderPrograms10Request, err
+	}
+
+	return getShaderPrograms10Request, nil
 }
 
 func FillBodyGetShaderPrograms10ResponseForMessage(shaderPrograms []ShaderProgram, message *Message) error {
