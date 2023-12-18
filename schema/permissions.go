@@ -25,6 +25,8 @@ var Permissions = map[string][]string{
 		CommandCreateShaderProgram,
 		CommandDeleteShaderProgram,
 		CommandGetShaderPrograms,
+		CommandCreateShaderProgramObject,
+		CommandDeleteShaderProgramObject,
 	},
 	PathMsDeveloperService: {
 		CommandCreateRelease,
@@ -42,6 +44,8 @@ var Permissions = map[string][]string{
 		CommandCreateShaderProgram,
 		CommandDeleteShaderProgram,
 		CommandGetShaderPrograms,
+		CommandCreateShaderProgramObject,
+		CommandDeleteShaderProgramObject,
 
 		//authenticate
 		CommandGetDevelopers,

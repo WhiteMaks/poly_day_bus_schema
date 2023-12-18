@@ -26,6 +26,9 @@ const (
 	CommandGetShaderPrograms   = "get-shader-programs"
 	CommandCreateShaderProgram = "create-shader-program"
 	CommandDeleteShaderProgram = "delete-shader-program"
+
+	CommandCreateShaderProgramObject = "create-shader-program-object"
+	CommandDeleteShaderProgramObject = "delete-shader-program-object"
 )
 
 const (
@@ -48,11 +51,30 @@ const (
 	CommandCreateShaderProgram10 = CommandCreateShaderProgram + "-" + Version10
 	CommandDeleteShaderProgram10 = CommandDeleteShaderProgram + "-" + Version10
 	CommandGetShaderPrograms10   = CommandGetShaderPrograms + "-" + Version10
+
+	CommandCreateShaderProgramObject10 = CommandCreateShaderProgramObject + "-" + Version10
+	CommandDeleteShaderProgramObject10 = CommandDeleteShaderProgramObject + "-" + Version10
 )
 
 const (
 	PathSubscriptionDeveloperServiceAuthenticateUserCreated10 = PathMsDeveloperService + "." + PathEventAuthenticateUserCreated10
 )
+
+type CreateShaderProgramObject10Request struct {
+	ShaderProgramId int64 `json:"shader_program_id"`
+	ModelEntityId   int64 `json:"model_entity_id"`
+}
+
+type CreateShaderProgramObject10Response struct {
+	ID int64 `json:"id"`
+}
+
+type DeleteShaderProgramObject10Request struct {
+	ID int64 `json:"id"`
+}
+
+type DeleteShaderProgramObject10Response struct {
+}
 
 type GetShaderPrograms10Request struct {
 	ReleaseId int64 `json:"release_id"`
@@ -248,6 +270,43 @@ type DeleteEntity10Request struct {
 }
 
 type DeleteEntity10Response struct {
+}
+
+func GetCreateShaderProgramObject10RequestFromMessage(message Message) (CreateShaderProgramObject10Request, error) {
+	var createShaderProgramObject10Request CreateShaderProgramObject10Request
+
+	err := json.Unmarshal(message.Body, &createShaderProgramObject10Request)
+	if err != nil {
+		return createShaderProgramObject10Request, err
+	}
+
+	return createShaderProgramObject10Request, nil
+}
+
+func FillBodyCreateShaderProgramObject10ResponseForMessage(shaderProgramObjectId int64, message *Message) error {
+	body := CreateShaderProgramObject10Response{
+		ID: shaderProgramObjectId,
+	}
+
+	bodyBytes, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	message.Body = bodyBytes
+
+	return nil
+}
+
+func GetDeleteShaderProgramObject10RequestFromMessage(message Message) (DeleteShaderProgramObject10Request, error) {
+	var deleteShaderProgramObject10Request DeleteShaderProgramObject10Request
+
+	err := json.Unmarshal(message.Body, &deleteShaderProgramObject10Request)
+	if err != nil {
+		return deleteShaderProgramObject10Request, err
+	}
+
+	return deleteShaderProgramObject10Request, nil
 }
 
 func GenerateShaderProgramStruct(id int64, name string, shaderEntityId int64) ShaderProgram {
