@@ -48,7 +48,7 @@ jobs:
           curl \
               -X POST https://api.telegram.org/bot${{secrets.TELEGRAM_BOT_TOKEN}}/sendMessage?chat_id=${{secrets.TELEGRAM_CHAT_ID}} \
             --header "Content-Type:application/json" \
-            --data '{"text":"Project: bus-schema\nVersion: ${{github.ref_name}}\nRelease: Success ✅\nTriggered by: ${{github.event.pusher.email}}"}'
+            --data '{"text":"Project: bus-schema\nVersion: ${{github.ref_name}}\nRelease: Success ✅\nTriggered by: ${{github.event.pusher.email}}\nMessage: ${{github.event.head_commit.message}}"}'
 
       - name: Failure result
         if: ${{ failure() }}
@@ -56,4 +56,4 @@ jobs:
           curl \
             -X POST https://api.telegram.org/bot${{secrets.TELEGRAM_BOT_TOKEN}}/sendMessage?chat_id=${{secrets.TELEGRAM_CHAT_ID}} \
             --header "Content-Type:application/json" \
-            --data '{"text":"Project: bus-schema\nVersion: ${{github.ref_name}}\nRelease: Failed ❌\nTriggered by: ${{github.event.pusher.email}}"}'
+            --data '{"text":"Project: bus-schema\nVersion: ${{github.ref_name}}\nRelease: Failed ❌\nTriggered by: ${{github.event.pusher.email}}\nMessage: ${{github.event.head_commit.message}}"}'
