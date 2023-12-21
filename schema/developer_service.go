@@ -85,9 +85,23 @@ type GetShaderPrograms10Response struct {
 }
 
 type ShaderProgram struct {
+	ID      int64                 `json:"id"`
+	Name    string                `json:"name"`
+	Code    ShaderProgramCode     `json:"code"`
+	Objects []ShaderProgramObject `json:"objects"`
+}
+
+type ShaderProgramCode struct {
 	ID             int64  `json:"id"`
-	Name           string `json:"name"`
-	ShaderEntityId int64  `json:"shader_entity_id"`
+	VertexShader   string `json:"vertex_shader"`
+	GeometryShader string `json:"geometry_shader"`
+	FragmentShader string `json:"fragment_shader"`
+}
+
+type ShaderProgramObject struct {
+	ID            int64  `json:"id"`
+	ModelEntityId int64  `json:"model_entity_id"`
+	Name          string `json:"name"`
 }
 
 type DeleteShaderProgram10Request struct {
@@ -109,6 +123,7 @@ type CreateShaderProgram10Response struct {
 
 type SaveShaderSource10Request struct {
 	VertexShader   string `json:"vertex_shader"`
+	GeometryShader string `json:"geometry_shader"`
 	FragmentShader string `json:"fragment_shader"`
 	EntityId       int64  `json:"entity_id"`
 }
@@ -123,6 +138,7 @@ type GetShaderSource10Request struct {
 
 type GetShaderSource10Response struct {
 	VertexShader   string `json:"vertex_shader"`
+	GeometryShader string `json:"geometry_shader"`
 	FragmentShader string `json:"fragment_shader"`
 	ID             int64  `json:"id"`
 }
@@ -309,11 +325,29 @@ func GetDeleteShaderProgramObject10RequestFromMessage(message Message) (DeleteSh
 	return deleteShaderProgramObject10Request, nil
 }
 
-func GenerateShaderProgramStruct(id int64, name string, shaderEntityId int64) ShaderProgram {
+func GenerateShaderProgramObjectStruct(id int64, modelEntityId int64, name string) ShaderProgramObject {
+	return ShaderProgramObject{
+		ID:            id,
+		ModelEntityId: modelEntityId,
+		Name:          name,
+	}
+}
+
+func GenerateShaderProgramCodeStruct(shaderEntityId int64, vertexShader string, geometryShader string, fragmentShader string) ShaderProgramCode {
+	return ShaderProgramCode{
+		ID:             shaderEntityId,
+		VertexShader:   vertexShader,
+		GeometryShader: geometryShader,
+		FragmentShader: fragmentShader,
+	}
+}
+
+func GenerateShaderProgramStruct(id int64, name string, code ShaderProgramCode, objects []ShaderProgramObject) ShaderProgram {
 	return ShaderProgram{
-		ID:             id,
-		Name:           name,
-		ShaderEntityId: shaderEntityId,
+		ID:      id,
+		Name:    name,
+		Code:    code,
+		Objects: objects,
 	}
 }
 
@@ -391,10 +425,11 @@ func GetGetShaderSource10RequestFromMessage(message Message) (GetShaderSource10R
 	return getShaderSource10Request, nil
 }
 
-func FillBodyGetShaderSource10ResponseForMessage(sourceId int64, vertexShader string, fragmentShader string, message *Message) error {
+func FillBodyGetShaderSource10ResponseForMessage(sourceId int64, vertexShader string, geometryShader string, fragmentShader string, message *Message) error {
 	body := GetShaderSource10Response{
 		ID:             sourceId,
 		VertexShader:   vertexShader,
+		GeometryShader: geometryShader,
 		FragmentShader: fragmentShader,
 	}
 
