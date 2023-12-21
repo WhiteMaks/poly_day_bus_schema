@@ -123,6 +123,7 @@ type CreateShaderProgram10Response struct {
 
 type SaveShaderSource10Request struct {
 	VertexShader   string `json:"vertex_shader"`
+	GeometryShader string `json:"geometry_shader"`
 	FragmentShader string `json:"fragment_shader"`
 	EntityId       int64  `json:"entity_id"`
 }
@@ -137,6 +138,7 @@ type GetShaderSource10Request struct {
 
 type GetShaderSource10Response struct {
 	VertexShader   string `json:"vertex_shader"`
+	GeometryShader string `json:"geometry_shader"`
 	FragmentShader string `json:"fragment_shader"`
 	ID             int64  `json:"id"`
 }
@@ -423,10 +425,11 @@ func GetGetShaderSource10RequestFromMessage(message Message) (GetShaderSource10R
 	return getShaderSource10Request, nil
 }
 
-func FillBodyGetShaderSource10ResponseForMessage(sourceId int64, vertexShader string, fragmentShader string, message *Message) error {
+func FillBodyGetShaderSource10ResponseForMessage(sourceId int64, vertexShader string, geometryShader string, fragmentShader string, message *Message) error {
 	body := GetShaderSource10Response{
 		ID:             sourceId,
 		VertexShader:   vertexShader,
+		GeometryShader: geometryShader,
 		FragmentShader: fragmentShader,
 	}
 
