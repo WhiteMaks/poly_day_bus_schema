@@ -242,6 +242,11 @@ func (et EntityType) String() *string {
 			result = "SOUND"
 			break
 		}
+	case TEXTURE:
+		{
+			result = "TEXTURE"
+			break
+		}
 	default:
 		return nil
 	}
