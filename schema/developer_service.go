@@ -199,12 +199,13 @@ type DeleteRelease10Response struct {
 type EntityType string
 
 const (
-	FOLDER EntityType = "FOLDER"
-	MODEL  EntityType = "MODEL"
-	SHADER EntityType = "SHADER"
-	SCRIPT EntityType = "SCRIPT"
-	MUSIC  EntityType = "MUSIC"
-	SOUND  EntityType = "SOUND"
+	FOLDER  EntityType = "FOLDER"
+	MODEL   EntityType = "MODEL"
+	SHADER  EntityType = "SHADER"
+	SCRIPT  EntityType = "SCRIPT"
+	MUSIC   EntityType = "MUSIC"
+	SOUND   EntityType = "SOUND"
+	TEXTURE EntityType = "TEXTURE"
 )
 
 func (et EntityType) String() *string {
@@ -239,6 +240,11 @@ func (et EntityType) String() *string {
 	case SOUND:
 		{
 			result = "SOUND"
+			break
+		}
+	case TEXTURE:
+		{
+			result = "TEXTURE"
 			break
 		}
 	default:
